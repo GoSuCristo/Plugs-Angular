@@ -7,21 +7,29 @@ import Swal from 'sweetalert2';
 
 @Injectable()
 export class ClienteService {
-  deleteCliente(id: number) {
-    throw new Error('Method not implemented.');
-  }
-
   private urlEndPoint: string = 'http://localhost:8080/api/clientes';
   private httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
   public errores: string[] = [];
   constructor(private http: HttpClient, private router : Router) { }
 
+  deleteCliente(id: number) {
+    throw new Error('Method not implemented.');
+  }
   getErrores(): string[] {
     return this.errores;
   }
   getClientes(): Observable<Cliente[]> {
     //return of (CLIENTES);
-    return this.http.get<Cliente[]>(this.urlEndPoint);
+    return this.http.get<Cliente[]>(this.urlEndPoint).pipe(
+      map(response => {
+        let clientes = response as Cliente[];
+
+        return clientes.map(cliente => {
+          cliente.nombre = cliente.nombre.toUpperCase();
+          return cliente;
+        });
+      })
+    );
   }
 
   create(cliente: Cliente): Observable<Cliente> {
